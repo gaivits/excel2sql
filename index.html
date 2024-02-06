@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Excel File Table Preview</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,13 +27,15 @@
 </head>
 <body>
 
-  <h2>Excel File Table Preview</h2>
+  <h2>Upload ตารางราคา</h2>
     <form action = './server/convert_excel_sql.php' method="post">
   <input type="file" id="excelFile" onchange="readExcelAndCreateTable()">
   <input type="submit">
   <!-- Table container -->
   <div id="tableContainer"></div>
         </form>
+        <button style="margin-left: 75%;" download><a href="./documents/price_list_final_load.xls">ไฟล์ตัวอย่าง</a></button>
+  
   <script>
     // Function to handle the onchange event of the input file
     function readExcelAndCreateTable() {
@@ -41,8 +44,8 @@
 
       // Get the file selected by the user
       var file = fileInput.files[0];
-
-      if (file) {
+      
+      if (file.type=='application/vnd.ms-excel') {
         // Create a FileReader object to read the file
         var reader = new FileReader();
 
@@ -156,6 +159,11 @@
 
         // Read the file as binary
         reader.readAsBinaryString(file);
+      }
+      else
+      {
+        alert('นามสกุลไฟล์ไม่ใช่ .xls');
+        return;
       }
     }
   </script>
