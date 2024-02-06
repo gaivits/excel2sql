@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excel File Table Preview</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+    table {
+      border: 1px solid black;
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Excel File Table Preview</h2>
+    <form action = './server/convert_excel_sql.php' method="post">
+  <input type="file" id="excelFile" onchange="readExcelAndCreateTable()">
+  <input type="submit">
+  <!-- Table container -->
+  <div id="tableContainer"></div>
+        </form>
+  <script>
+    // Function to handle the onchange event of the input file
+    function readExcelAndCreateTable() {
+      // Get the input file element
+      var fileInput = document.getElementById('excelFile');
+
+      // Get the file selected by the user
+      var file = fileInput.files[0];
+
+      if (file) {
+        // Create a FileReader object to read the file
+        var reader = new FileReader();
+
+        // Set up the function to be called when the file is loaded
+        reader.onload = function(e) {
+          // Get the content of the file
+          var content = e.target.result;
+
+          // Use SheetJS to read the Excel file content
+          var workbook = XLSX.read(content, { type: 'binary' });
+          var sheetName = workbook.SheetNames[0];
+          var sheet = workbook.Sheets[sheetName];
+
+          // Convert sheet data to JSON
+          var jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          // Create a table
+          var table = '<table>';
+            table.border = '1px solid';
+          // Create table headers
+          table += '<tr>';
+            table += '<th>'+'No.'+'</th>';
+          for (var i = 0; i < jsonData[0].length; i++){
+            
+            //table += '<th>'+jsonData[0][i]+'</th>';
+            if(jsonData[0][i]=='PC_LIST')
+            {
+              table += '<th>'+'เอกสารสาร'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_PART')
+            {
+              table += '<th>'+'สินค้า'+'</th>';
+            }
+            if(jsonData[0][i]=='PT_DESC1_')
+            {
+              table += '<th>'+'รายละเอียด1'+'</th>';
+            }
+            if(jsonData[0][i]=='PT_DESC2')
+            {
+              table += '<th>'+'รายละเอียด2'+'</th>';
+            }
+            if(jsonData[0][i]==undefined)
+            {
+              table += '<th>'+'จิปาถะ'+'</th>';
+            }
+            if(jsonData[0][i]=='PT_DESC3')
+            {
+              table += '<th>'+'รายละเอียด3'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_UM')
+            {
+              table += '<th>'+'หน่วยนับ'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_MIN_PRICE')
+            {
+              table += '<th>'+'ราคาขาย'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_MAX_PRICE##1')
+            {
+              table += '<th>'+'ราคา1'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_MAX_PRICE##2')
+            {
+              table += '<th>'+'ราคา2'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_MAX_PRICE##3')
+            {
+              table += '<th>'+'ราคา3'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_MAX_PRICE##4')
+            {
+              table += '<th>'+'ราคา4'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_MAX_PRICE##5')
+            {
+              table += '<th>'+'ราคา5'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_MAX_PRICE##6')
+            {
+              table += '<th>'+'ราคา6'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_START')
+            {
+              table += '<th>'+'วันที่เริ่มใช้'+'</th>';
+            }
+            if(jsonData[0][i]=='PC_EXPIRE')
+            {
+              table += '<th>'+'วันหมดอายุ'+'</th>';
+            }
+          }
+          table += '</tr>';
+
+          // Create table rows
+          
+          for (var j = 1; j < jsonData.length; j++) {
+            table += '<tr>';
+              table += '<td>' + j + '</td>';
+            for (var k = 0; k < jsonData[j].length; k++) {
+              table += '<td>' + jsonData[j][k] + '</td>';
+            }
+            table += '</tr>';
+          }
+
+          // Close the table
+          table += '</table>';
+
+          // Display the table
+          var tableContainer = document.getElementById('tableContainer');
+          tableContainer.innerHTML = table;
+        };
+
+        // Read the file as binary
+        reader.readAsBinaryString(file);
+      }
+    }
+  </script>
+
+</body>
+</html>
