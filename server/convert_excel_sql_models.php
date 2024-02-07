@@ -90,8 +90,8 @@ class convert_excel_sql_models extends connections
             $PC_LIST = $prepare_data[$i]['PC_LIST'];
             $PC_PART = $prepare_data[$i]['PC_PART'];
             $PC_UM = $prepare_data[$i]['PC_UM'];
-            $PC_START = strtotime($prepare_data[$i]['PC_START']);
-            $PC_EXPIRE = strtotime($prepare_data[$i]['PC_EXPIRE']);
+            $PC_START = strtotime($prepare_data[$i]['PC_START']) || '09-06-2024';
+            $PC_EXPIRE = strtotime($prepare_data[$i]['PC_EXPIRE']) || 'now+25 years';
             $PC_MIN_PRICE = $prepare_data[$i]['PC_MIN_PRICE'];
             $PC_MAX_PRICE_1 = $prepare_data[$i]['PC_MAX_PRICE##1'];
             $PC_MAX_PRICE_2 = $prepare_data[$i]['PC_MAX_PRICE##2'];
@@ -170,8 +170,8 @@ class convert_excel_sql_models extends connections
             $stmt->bindParam(':PC_LIST', $PC_LIST,PDO::PARAM_STR);
             $stmt->bindParam(':PC_PART', $PC_PART,PDO::PARAM_STR);
             $stmt->bindParam(':PC_UM', $PC_UM,PDO::PARAM_STR);
-            $stmt->bindParam(':PC_START', $PC_START,PDO::PARAM_STR);
-            $stmt->bindParam(':PC_EXPIRE', $PC_EXPIRE,PDO::PARAM_STR);
+            $stmt->bindParam(':PC_START', $PC_START || strtotime('06-09-2023'),PDO::PARAM_STR);
+            $stmt->bindParam(':PC_EXPIRE', $PC_EXPIRE || strtotime('now+25 years'),PDO::PARAM_STR);
             $stmt->bindParam(':PC_MIN_PRICE', $PC_MIN_PRICE,PDO::PARAM_STR);
             $stmt->bindParam(':PC_MAX_PRICE_1', $PC_MAX_PRICE_1,PDO::PARAM_STR);
             $stmt->bindParam(':PC_MAX_PRICE_2', $PC_MAX_PRICE_2,PDO::PARAM_STR);
