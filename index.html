@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Excel File Table Preview</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
     crossorigin="anonymous"></script>
@@ -18,6 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -38,35 +39,60 @@
       padding: 8px;
       text-align: left;
     }
+
+    .file {
+      visibility: hidden;
+      position: absolute;
+    }
   </style>
 </head>
 
 <body>
-  <p id="company_name"></p>
-  <br>
-  <h2>Upload ตารางราคา</h2><br>
+  <p style="margin-right: 85%" id="company_name"></p>
   
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 bd-example">
-        <div class="input-group">
-          <div class="custom-file">
-           <input class="custom-file-input" style="cursor: pointer;" id="excelFile" name="excelFile" type="file" accept=".xls" onchange="readExcelAndCreateTable()">
-            <label class="custom-file-label" for="inputGroupFile04">Upload CSV</label>
-          </div>
+  <h2>Upload ตารางราคา</h2>
+  
+  <center>
+    <div class="ml-2 col-sm-6">
+      <div id="msg"></div>
+      <form method="post" id="image-form">
+        <input type="file" name="excelFile" id="excelFile" class="file" onchange="readExcelAndCreateTable()" />
+        <div class="input-group my-3">
+          <input type="text" class="form-control" disabled placeholder="Upload File" id="file" />
           <div class="input-group-append">
-            <button class="btn btn-success" onclick="uploadFile()" type="button">Submit</button>
-            <button class="btn btn-secondary" download><a style="color: white;"
-              href="./documents/example.xls">ตัวอย่าง</a></button>
-        
+            <button type="button" class="browse btn btn-primary">
+              Browse...
+            </button>
+            <button class="btn btn-success" onclick="uploadFile()" type="button">
+              Submit
+            </button>
+            <button class="btn btn-secondary" download>
+              <a style="color: white" href="./documents/example.xls">ตัวอย่าง</a>
+            </button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
-  </div>
-  <!-- Table container -->
+  </center>
+  <script>
+    $(document).on("click", ".browse", function () {
+      var file = $(this).parents().find(".file");
+      file.trigger("click");
+    });
+    $('input[type="file"]').change(function (e) {
+      var fileName = e.target.files[0].name;
+      $("#file").val(fileName);
 
-  </form>
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        // get loaded data and render thumbnail.
+        document.getElementById("preview").src = e.target.result;
+      };
+      // read the image file as a data URL.
+      reader.readAsDataURL(this.files[0]);
+    });
+  </script>
+  <!-- Table container -->
   <div>
     <table id="tableContainerOuter" border="1">
       <tr>
@@ -82,34 +108,30 @@
         <th>ราคา5</th>
         <th>ราคา6</th>
         <th>วันที่เริ่มใช้</th>
-        
       </tr>
 
-      <div id="tableContainer">
-      </div>
-
-
+      <div id="tableContainer"></div>
     </table>
-
   </div>
-
 
   <script>
     // Function to handle the onchange event of the input file
-
-    let protocall = 'http' ? 'http' : 'https';
-    let url = protocall + "://" + location.hostname + "/tsttest/server/get_company.php";
-    fetch(url, { method: 'get' }).then((da) => {
-      da = da.json();
-
-    });
- 
+    
+    
+    let url =
+    "http://192.168.9.55/tsttest/server/get_company.php";
+    $.get(url,(data)=>{
+      let new_json = JSON.parse(data);
+      let new_data = new_json.CC;
+      document.getElementById('company_name').innerHTML = new_data;
+    })
 
     function uploadFile() {
-      let protocall = 'http' ? 'http' : 'https';
-      let url = protocall + "://" + location.hostname + "/tsttest/server/convert_excel_sql.php";
+      
+      let url =
+      "http://192.168.9.55/tsttest/server/convert_excel_sql.php";
 
-      let fileInput = document.getElementById('excelFile');
+      let fileInput = document.getElementById("excelFile");
       let file = fileInput.files[0];
 
       if (!file) {
@@ -118,40 +140,45 @@
       }
 
       let formData = new FormData();
-      formData.append('excelFile', file);
-      if (file.type != 'application/vnd.ms-excel') {
-        alert('รองรับแค่ .xls');
+      formData.append("excelFile", file);
+      if (file.type != "application/vnd.ms-excel") {
+        alert("รองรับแค่ .xls");
         return;
-      }
-      else {
+      } else {
         fetch(url, {
-          method: 'POST',
-          body: formData
+          method: "POST",
+          body: formData,
         })
-          .then(response => {
+          .then((response) => {
             if (response.ok) {
               return response.text();
             }
-            throw new Error('Network response was not ok.');
+            throw new Error("Network response was not ok.");
           })
-          .then(data => {
+          .then((data) => {
             console.log(data);
-            alert('File uploaded successfully!');
+            alert("File uploaded successfully!");
+            
           })
-          .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            alert('File upload failed.');
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            alert("File upload failed.");
           });
       }
+      
     }
+
     function readExcelAndCreateTable() {
       // Get the input file element
-      var fileInput = document.getElementById('excelFile');
+      var fileInput = document.getElementById("excelFile");
 
       // Get the file selected by the user
       var file = fileInput.files[0];
 
-      if (file.type == 'application/vnd.ms-excel') {
+      if (file.type == "application/vnd.ms-excel") {
         // Create a FileReader object to read the file
         var reader = new FileReader();
 
@@ -161,16 +188,20 @@
           var content = e.target.result;
 
           // Use SheetJS to read the Excel file content
-          var workbook = XLSX.read(content, { type: 'binary' });
+          var workbook = XLSX.read(content, {
+            type: "binary",
+          });
           var sheetName = workbook.SheetNames[0];
           var sheet = workbook.Sheets[sheetName];
 
           // Convert sheet data to JSON
-          var jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          var jsonData = XLSX.utils.sheet_to_json(sheet, {
+            header: 1,
+          });
 
           // Create a table
-          var table = '<table>';
-          table.border = '1px solid';
+          var table = "<table>";
+          table.border = "1px solid";
           // Create table headers
           // table += '<tr>';
           // table += '<th>' + 'No.' + '</th>';
@@ -229,39 +260,40 @@
           // Create table rows
 
           for (var j = 1; j < jsonData.length; j++) {
-
-            table += '<td>' + (j - 1) + '</td>';
+            if (j - 1 == 0) {
+              table += "<th>" + "No." + "</th>";
+            } else {
+              table += "<td>" + (j - 1) + "</td>";
+            }
             for (var k = 0; k < jsonData[j].length; k++) {
-              if(j==1)
-              {
-              table += '<th>' + jsonData[1][k] + '</th>';
-              }
+              if (j == 1) {
+                table += "<th>" + jsonData[1][k] + "</th>";
               
-              else{
-              table += '<td>' + jsonData[j][k] + '</td>';
+              } else {
+                table += "<td>" +jsonData[j][k] + "</td>";
               }
             }
-            table += '</tr>';
+            table += "</tr>";
           }
 
           // Close the table
           table += "</table>";
-          
+
           // Display the table
-          
-          var tableContainer = document.getElementById('tableContainer');
-          var tableContainerOuter = document.getElementById('tableContainerOuter').style.display='none';
-          
+
+          var tableContainer = document.getElementById("tableContainer");
+          var tableContainerOuter = (document.getElementById(
+            "tableContainerOuter"
+          ).style.display = "none");
+
           tableContainer.innerHTML = table;
         };
 
         // Read the file as binary
         reader.readAsBinaryString(file);
       }
-
     }
   </script>
-
 </body>
 
 </html>
