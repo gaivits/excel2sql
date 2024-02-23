@@ -7,7 +7,7 @@ class get_company_models extends connections
     public function main()
     {
         $conn = $this->oracleMyConn();
-        $sql = "SELECT si_desc FROM si_mstr";
+        $sql = "SELECT min(SI_DESC_ENG) as cc FROM TSTTEST.si_mstr";
         $result = $conn->prepare($sql);
         $result->execute();
 
